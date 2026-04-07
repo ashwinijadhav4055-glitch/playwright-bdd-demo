@@ -1,0 +1,28 @@
+{
+  "name": "playwright-bdd-demo",
+  "version": "1.0.0",
+  "description": "Playwright BDD Cucumber Demo - UI & API Automation with POM",
+  "scripts": {
+    "test": "cucumber-js --config cucumber.js",
+    "test:ui": "cucumber-js --config cucumber.js --tags @ui",
+    "test:api": "cucumber-js --config cucumber.js --tags @api",
+    "test:smoke": "cucumber-js --config cucumber.js --tags @smoke",
+    "allure:generate": "allure generate allure-results --clean -o allure-report",
+    "allure:open": "allure open allure-report",
+    "allure:serve": "allure serve allure-results",
+    "report": "npm run allure:generate && npm run allure:open",
+    "clean": "rm -rf allure-results allure-report test-results"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^10.8.0",
+    "@playwright/test": "^1.44.1",
+    "@types/node": "^20.14.2",
+    "allure-cucumberjs": "^3.0.0",
+    "allure-playwright": "^3.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

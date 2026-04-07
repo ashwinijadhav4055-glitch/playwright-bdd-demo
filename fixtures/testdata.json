@@ -1,0 +1,65 @@
+{
+  "checkout": {
+    "valid": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "postalCode": "12345"
+    },
+    "invalid": {
+      "missingFirstName": {
+        "firstName": "",
+        "lastName": "Doe",
+        "postalCode": "12345"
+      },
+      "missingLastName": {
+        "firstName": "John",
+        "lastName": "",
+        "postalCode": "12345"
+      },
+      "missingPostalCode": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "postalCode": ""
+      }
+    }
+  },
+  "products": {
+    "sauceDemoProducts": [
+      "Sauce Labs Backpack",
+      "Sauce Labs Bike Light",
+      "Sauce Labs Bolt T-Shirt",
+      "Sauce Labs Fleece Jacket",
+      "Sauce Labs Onesie",
+      "Test.allTheThings() T-Shirt (Red)"
+    ],
+    "sortOptions": {
+      "nameAZ": "az",
+      "nameZA": "za",
+      "priceLowHigh": "lohi",
+      "priceHighLow": "hilo"
+    },
+    "dummyJsonProduct": {
+      "title": "Test Product",
+      "description": "A product created for testing",
+      "price": 99.99,
+      "category": "electronics",
+      "brand": "TestBrand",
+      "stock": 50
+    }
+  },
+  "api": {
+    "baseUrl": "https://dummyjson.com",
+    "endpoints": {
+      "auth": "/auth/login",
+      "products": "/products",
+      "users": "/users"
+    },
+    "newUser": {
+      "firstName": "TestFirst",
+      "lastName": "TestLast",
+      "email": "testuser@example.com",
+      "age": 28,
+      "gender": "male"
+    }
+  }
+}
