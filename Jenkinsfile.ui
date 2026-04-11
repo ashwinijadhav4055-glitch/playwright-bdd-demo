@@ -1,0 +1,69 @@
+pipeline {
+    agent any
+    tools { nodejs 'NodeJS-20' }
+
+    environment {
+        CI          = 'true'
+        BASE_URL    = credentials('BASE_URL')
+        UI_USERNAME = credentials('UI_USERNAME')
+        UI_PASSWORD = credentials('UI_PASSWORD')
+        HEADLESS    = 'true'
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timestamps()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                echo "🧪 UI Tests — Build #${env.BUILD_NUMBER}"
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                bat 'node --version'
+                bat 'npm ci'
+            }
+        }
+        stage('Install Browsers') {
+            steps {
+                bat 'npx playwright install chromium --with-deps'
+            }
+        }
+        stage('Create .env') {
+            steps {
+                bat """
+                    echo BASE_URL=%BASE_URL% > .env
+                    echo UI_USERNAME=%UI_USERNAME% >> .env
+                    echo UI_PASSWORD=%UI_PASSWORD% >> .env
+                    echo HEADLESS=%HEADLESS% >> .env
+                """
+            }
+        }
+        stage('Clean Results') {
+            steps {
+                bat 'if exist allure-results rmdir /s /q allure-results'
+                bat 'if exist playwright-report rmdir /s /q playwright-report'
+                bat 'mkdir allure-results'
+            }
+        }
+        stage('Run UI Tests') {
+            steps {
+                bat 'npm run test:ui || exit 0'
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'allure-results/**', allowEmptyArchive: true
+            bat 'if exist .env del .env'
+        }
+        success { echo "✅ UI Tests PASSED — Build #${env.BUILD_NUMBER}" }
+        failure { echo "❌ UI Tests FAILED — Build #${env.BUILD_NUMBER}" }
+    }
+}

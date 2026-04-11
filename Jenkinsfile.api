@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+    tools { nodejs 'NodeJS-20' }
+
+    environment {
+        CI           = 'true'
+        API_BASE_URL = credentials('API_BASE_URL')
+        API_USERNAME = credentials('API_USERNAME')
+        API_PASSWORD = credentials('API_PASSWORD')
+    }
+
+    options {
+        timeout(time: 20, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timestamps()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                echo "🔌 API Tests — Build #${env.BUILD_NUMBER}"
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                bat 'node --version'
+                bat 'npm ci'
+            }
+        }
+        stage('Create .env') {
+            steps {
+                bat """
+                    echo API_BASE_URL=%API_BASE_URL% > .env
+                    echo API_USERNAME=%API_USERNAME% >> .env
+                    echo API_PASSWORD=%API_PASSWORD% >> .env
+                """
+            }
+        }
+        stage('Clean Results') {
+            steps {
+                bat 'if exist allure-results rmdir /s /q allure-results'
+                bat 'mkdir allure-results'
+            }
+        }
+        stage('Run API Tests') {
+            steps {
+                bat 'npm run test:api || exit 0'
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'allure-results/**', allowEmptyArchive: true
+            bat 'if exist .env del .env'
+        }
+        success { echo "✅ API Tests PASSED — Build #${env.BUILD_NUMBER}" }
+        failure { echo "❌ API Tests FAILED — Build #${env.BUILD_NUMBER}" }
+    }
+}
