@@ -53,5 +53,6 @@ export class LoginPage extends BasePage {
     const username = process.env.UI_USERNAME || 'standard_user';
     const password = process.env.UI_PASSWORD || 'secret_sauce';
     await this.login(username, password);
+    console.log('login successfully');
   }
 }
